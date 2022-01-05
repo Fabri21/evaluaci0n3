@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:m0ntecarmelo/calendar.dart';
 import 'package:m0ntecarmelo/buscar.dart';
 import 'package:m0ntecarmelo/destacado.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void calendar() {
-  runApp(const MaterialApp());
-}
-
-class StartPage extends StatefulWidget {
-  @override
-  _StartPageState createState() => _StartPageState();
+void main() {
+  initializeDateFormatting().then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,6 +20,11 @@ class MyApp extends StatelessWidget {
       home: StartPage(),
     );
   }
+}
+
+class StartPage extends StatefulWidget {
+  @override
+  _StartPageState createState() => _StartPageState();
 }
 
 class _StartPageState extends State<StartPage> {
