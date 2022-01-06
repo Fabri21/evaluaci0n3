@@ -1,223 +1,119 @@
 import 'package:flutter/material.dart';
-import 'package:m0ntecarmelo/calendar.dart';
-import 'package:m0ntecarmelo/buscar.dart';
-import 'package:m0ntecarmelo/destacado.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 void main() {
-  initializeDateFormatting().then((_) => runApp(MyApp()));
+  return runApp(CalendarApp());
 }
 
-class MyApp extends StatelessWidget {
+/// The app which hosts the home page which contains the calendar on it.
+class CalendarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TableCalendar Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: StartPage(),
-    );
+    return const MaterialApp(title: 'Calendar Demo', home: MyHomePage());
   }
 }
 
-class StartPage extends StatefulWidget {
+/// The hove page which hosts the calendar
+class MyHomePage extends StatefulWidget {
+  /// Creates the home page to display teh calendar widget.
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _StartPageState createState() => _StartPageState();
+  // ignore: library_private_types_in_public_api
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _StartPageState extends State<StartPage> {
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Calendario'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              child: Text('Basics'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => StartPage()),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            ElevatedButton(
-              child: Text('Range Selection'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => StartPage()),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            ElevatedButton(
-              child: Text('Events'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => StartPage()),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            ElevatedButton(
-              child: Text('Multiple Selection'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => StartPage()),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            ElevatedButton(
-              child: Text('Complex'),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => StartPage()),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-          ],
-        ),
-      ),
-    );
+        body: SfCalendar(
+      view: CalendarView.month,
+      dataSource: MeetingDataSource(_getDataSource()),
+      // by default the month appointment display mode set as Indicator, we can
+      // change the display mode as appointment using the appointment display
+      // mode property
+      monthViewSettings: const MonthViewSettings(
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+    ));
+  }
+
+  List<Meeting> _getDataSource() {
+    final List<Meeting> meetings = <Meeting>[];
+    final DateTime today = DateTime.now();
+    final DateTime startTime =
+        DateTime(today.year, today.month, today.day, 9, 0, 0);
+    final DateTime endTime = startTime.add(const Duration(hours: 2));
+    meetings.add(Meeting(
+        'Conference', startTime, endTime, const Color(0xFF0F8644), false));
+    return meetings;
   }
 }
 
-// Call when you want the date time range picker to be shown
-
-// Call when you want the date time range picker to be shown
-class BottomNavBarTransparentFb1 extends StatefulWidget {
-  const BottomNavBarTransparentFb1({Key? key}) : super(key: key);
-
-  @override
-  _BottomNavBarTransparentFb1State createState() =>
-      _BottomNavBarTransparentFb1State();
-}
-
-class _BottomNavBarTransparentFb1State
-    extends State<BottomNavBarTransparentFb1> {
-  //- - - - - - - - - instructions - - - - - - - - - - - - - - - - - -
-  // WARNING! MUST ADD extendBody: true; TO CONTAINING SCAFFOLD
-  //
-  // Instructions:
-  //
-  // add this widget to the bottomNavigationBar property of a Scaffold, along with
-  // setting the extendBody parameter to true i.e:
-  //
-  // Scaffold(
-  //  extendBody: true,
-  //  bottomNavigationBar: BottomNavBarTransparentFb1()
-  // )
-  //
-  // Properties such as color and height can be set by changing the properties at the top of the build method
-  //
-  // For help implementing this in a real app, watch https://www.youtube.com/watch?v=C0_3w0kd0nc. The style is different, but connecting it to navigation is the same.
-  //
-  //- - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - -
+/// An object to set the appointment collection data source to calendar, which
+/// used to map the custom appointment data to the calendar appointment, and
+/// allows to add, remove or reset the appointment collection.
+class MeetingDataSource extends CalendarDataSource {
+  /// Creates a meeting data source, which used to set the appointment
+  /// collection to the calendar
+  MeetingDataSource(List<Meeting> source) {
+    appointments = source;
+  }
 
   @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    double height = 56;
+  DateTime getStartTime(int index) {
+    return _getMeetingData(index).from;
+  }
 
-    final primaryColor = Colors.orange;
-    final secondaryColor = Colors.black54;
-    final accentColor = const Color(0xffffffff);
-    final backgroundColor = Colors.black12.withOpacity(.2);
+  @override
+  DateTime getEndTime(int index) {
+    return _getMeetingData(index).to;
+  }
 
-    return BottomAppBar(
-      color: backgroundColor,
-      elevation: 0,
-      child: Stack(
-        children: [
-          Container(
-            height: height,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                NavBarIcon(
-                  text: "Home",
-                  icon: Icons.home_outlined,
-                  selected: true,
-                  onPressed: () {},
-                  defaultColor: secondaryColor,
-                  selectedColor: primaryColor,
-                ),
-                NavBarIcon(
-                  text: "Search",
-                  icon: Icons.search_outlined,
-                  selected: false,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Buscar()));
-                  },
-                  defaultColor: secondaryColor,
-                  selectedColor: primaryColor,
-                ),
-                NavBarIcon(
-                    text: "Cart",
-                    icon: Icons.star_outlined,
-                    selected: false,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Destacado()));
-                    },
-                    defaultColor: secondaryColor,
-                    selectedColor: primaryColor),
-                NavBarIcon(
-                  text: "Calendar",
-                  icon: Icons.date_range_outlined,
-                  selected: false,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => StartPage()));
-                  },
-                  selectedColor: primaryColor,
-                  defaultColor: secondaryColor,
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  @override
+  String getSubject(int index) {
+    return _getMeetingData(index).eventName;
+  }
+
+  @override
+  Color getColor(int index) {
+    return _getMeetingData(index).background;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return _getMeetingData(index).isAllDay;
+  }
+
+  Meeting _getMeetingData(int index) {
+    final dynamic meeting = appointments![index];
+    late final Meeting meetingData;
+    if (meeting is Meeting) {
+      meetingData = meeting;
+    }
+
+    return meetingData;
   }
 }
 
-class NavBarIcon extends StatelessWidget {
-  const NavBarIcon(
-      {Key? key,
-      required this.text,
-      required this.icon,
-      required this.selected,
-      required this.onPressed,
-      this.selectedColor = const Color(0xffFF8527),
-      this.defaultColor = Colors.black54})
-      : super(key: key);
-  final String text;
-  final IconData icon;
-  final bool selected;
-  final Function() onPressed;
-  final Color defaultColor;
-  final Color selectedColor;
+/// Custom business object class which contains properties to hold the detailed
+/// information about the event data which will be rendered in calendar.
+class Meeting {
+  /// Creates a meeting class with required details.
+  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: onPressed,
-          icon: Icon(
-            icon,
-            size: 25,
-            color: selected ? selectedColor : defaultColor,
-          ),
-        ),
-      ],
-    );
-  }
+  /// Event name which is equivalent to subject property of [Appointment].
+  String eventName;
+
+  /// From which is equivalent to start time property of [Appointment].
+  DateTime from;
+
+  /// To which is equivalent to end time property of [Appointment].
+  DateTime to;
+
+  /// Background which is equivalent to color property of [Appointment].
+  Color background;
+
+  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
+  bool isAllDay;
 }

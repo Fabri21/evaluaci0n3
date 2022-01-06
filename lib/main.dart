@@ -325,7 +325,7 @@ class _BottomNavBarTransparentFb1State
                   selected: false,
                   onPressed: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => StartPage()));
+                        MaterialPageRoute(builder: (context) => CalendarApp()));
                   },
                   selectedColor: primaryColor,
                   defaultColor: secondaryColor,
